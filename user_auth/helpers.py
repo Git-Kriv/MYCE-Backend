@@ -71,6 +71,7 @@ def verify_otp(otp, mobile_number):
             otp_object.delete()
     return False
 
+
 def jwt_auth_required(view_func):
     """Decorator to check if the user is authenticated."""
 

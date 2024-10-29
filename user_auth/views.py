@@ -11,7 +11,7 @@ from user_auth.serializers import (
     UserProfileSerializer,
 )
 from user_auth.helpers import verify_otp, send_otp, jwt_auth_required
-from user_auth.models import CustomUser,UserProfile
+from user_auth.models import CustomUser, UserProfile
 
 # pylint: disable=no-member
 
@@ -47,8 +47,6 @@ def signup(request):  # pylint: disable=R1710
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def verify_phone(request):
@@ -57,6 +55,13 @@ def verify_phone(request):
     if request.method == "POST":
         try:
             phone_number = request.data["phone_number"]
+
+            if int(phone_number) == 1234567890:  # FIXME: Only for  testing.
+                return Response(
+                    {"success": "Phone number exists", "registered": False},
+                    status=status.HTTP_200_OK,
+                )
+
             user = CustomUser.objects.filter(phone_number=phone_number).first()
             if user is None:
                 if send_otp(phone_number):
@@ -93,7 +98,6 @@ def verify_phone(request):
     )
 
 
-
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def verify_and_return_creds(request):
@@ -101,15 +105,38 @@ def verify_and_return_creds(request):
     try:
         otp = request.data["otp"]
         phone_number = request.data["phone_number"]
+        # FIXME: This is just for the google app testing
+        if str(phone_number) == "1234567890":
+            if CustomUser.objects.filter(phone_number=int(phone_number)).exists():
+                user = CustomUser.objects.get(phone_number=phone_number)
+                refresh = RefreshToken.for_user(user)
+            else:
+                user = CustomUser.objects.create(
+                    name="TEST", phone_number=phone_number, details_submitted=False
+                )
+                refresh = RefreshToken.for_user(user)
+
+            user_profile = UserProfile.objects.filter(user=user)
+
+            if user_profile.exists():
+                user_profile_data = UserProfileSerializer(user_profile.first()).data
+            else:
+                user_profile_data = None
+
+            data = {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user_profile": user_profile_data,
+            }
+            return Response({"key": True, "data": data}, status=status.HTTP_200_OK)
+        # REMOVE THIS COMPLETE BLOCK AFTER TESTING ^
         if verify_otp(otp, phone_number):
             user = CustomUser.objects.get(phone_number=phone_number)
             refresh = RefreshToken.for_user(user)
 
             user_profile = UserProfile.objects.filter(user=user)
             if user_profile.exists():
-                user_profile_data = UserProfileSerializer(
-                    user_profile.first()
-                ).data
+                user_profile_data = UserProfileSerializer(user_profile.first()).data
             else:
                 user_profile_data = None
 

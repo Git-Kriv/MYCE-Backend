@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
+
 # pylint: disable=C0115
 
 
@@ -42,7 +43,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     ## User Details
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, blank=True, null=True)
-    email = models.EmailField(unique=True, null=True, blank=True)
+    email = models.EmailField(
+        unique=False, null=True, blank=True
+    )  # FIXME: Change when SMTP is configured
     phone_number = models.BigIntegerField(unique=True, blank=False, null=False)
     details_submitted = models.BooleanField(default=False)
     address = models.TextField(blank=True, null=True)
@@ -87,7 +90,6 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name_plural = "User Profiles"
         ordering = ["full_name", "email"]
-
 
 
 class OTP(models.Model):
