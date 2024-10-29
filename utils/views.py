@@ -4,11 +4,12 @@ from rest_framework.decorators import api_view
 
 
 from user_auth.helpers import jwt_auth_required
-from utils.models import House, IndustrialProperty, CommercialProperty
+from utils.models import House, IndustrialProperty, CommercialProperty, Inquiries
 from utils.serializers import (
     HouseSerializer,
     IndustrialPropertySerializer,
     CommercialPropertySerializer,
+    InquiriesSerializer,
 )
 
 
@@ -57,6 +58,19 @@ def get_commercial_properties(request):
     if request.method == "POST":
         request.data["user"] = request.user.id
         serializer = CommercialPropertySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@jwt_auth_required
+def post_inquiry(request):
+    """Post an inquiry."""
+    if request.method == "POST":
+        request.data["user"] = request.user.id
+        serializer = InquiriesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)

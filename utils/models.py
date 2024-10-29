@@ -28,7 +28,7 @@ class House(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     home_type = models.CharField(
-        choices=HOUSE_TYPE, max_length=255, blank=False, null=False
+        choices=HOUSE_TYPE, max_length=255, blank=False, null=False, default="Bungalow"
     )
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
@@ -44,7 +44,7 @@ class House(models.Model):
 
     class Meta:
         verbose_name_plural = "Houses"
-        ordering = ["type"]
+        ordering = ["home_type"]
 
 
 class IndustrialProperty(models.Model):
@@ -54,7 +54,11 @@ class IndustrialProperty(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     property_type = models.CharField(
-        choices=INDUSTRY_PROPERTY_TYPE, max_length=255, blank=False, null=False
+        choices=INDUSTRY_PROPERTY_TYPE,
+        max_length=255,
+        blank=False,
+        null=False,
+        default="Office Space",
     )
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
@@ -69,7 +73,7 @@ class IndustrialProperty(models.Model):
 
     class Meta:
         verbose_name_plural = "Industrial Properties"
-        ordering = ["type"]
+        ordering = ["property_type"]
 
 
 class CommercialProperty(models.Model):
@@ -78,7 +82,9 @@ class CommercialProperty(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    cp_type = models.CharField(max_length=255, blank=False, null=False)
+    cp_type = models.CharField(
+        max_length=255, blank=False, null=False, default="Factory Structure"
+    )
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     plan_details = models.TextField(blank=True, null=True)
@@ -91,7 +97,7 @@ class CommercialProperty(models.Model):
 
     class Meta:
         verbose_name_plural = "Commercial Properties"
-        ordering = ["type"]
+        ordering = ["cp_type"]
 
 
 class Inquiries(models.Model):

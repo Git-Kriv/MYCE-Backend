@@ -1,8 +1,17 @@
 from django.urls import path
-
-from utils.views import get_houses, get_industrial_properties
+from . import views
 
 urlpatterns = [
-    path("houses/", get_houses, name="get_houses"),
-    path("industrial_properties/", get_industrial_properties, name="get_industrial_properties"),
+    path("houses/", views.get_houses, name="get_houses"),
+    path(
+        "industrial-properties/",
+        views.get_industrial_properties,
+        name="get_industrial_properties",
+    ),
+    path(
+        "commercial-properties/",
+        views.get_commercial_properties,
+        name="get_commercial_properties",
+    ),
+    path("inquiries/", views.post_inquiry, name="post_inquiry"),
 ]
