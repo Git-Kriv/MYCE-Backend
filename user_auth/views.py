@@ -10,7 +10,7 @@ from user_auth.serializers import (
     UserRegisterSerializer,
     UserProfileSerializer,
 )
-from user_auth.helpers import verify_otp, send_otp, jwt_auth_required
+from user_auth.helpers import verify_otp, send_otp, send_email, jwt_auth_required
 from user_auth.models import CustomUser, UserProfile
 
 # pylint: disable=no-member
@@ -79,6 +79,58 @@ def verify_phone(request):
                 )
 
             if send_otp(phone_number):
+                return Response(
+                    {"success": "Phone number exists", "registered": True},
+                    status=status.HTTP_200_OK,
+                )
+            return Response(
+                data={"error": "OTP not sent"},
+                status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            )
+        except CustomUser.DoesNotExist:
+            print("[OTP FLOW] ERROR: ", "User not found")
+            return Response(
+                {"error": "Invalid request"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    return Response(
+        {"error": "Method Not Allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED
+    )
+
+
+@api_view(["POST"])
+@permission_classes(AllowAny)
+def verify_email(request):
+    """To check if a user exists with same phone number if not then create user and send OTP"""
+
+    if request.method == "POST":
+        try:
+            email = request.data["email"]
+
+            if email == "test@myce.com":  # FIXME: Only for  testing.
+                return Response(
+                    {"success": "Phone number exists", "registered": False},
+                    status=status.HTTP_200_OK,
+                )
+
+            user = CustomUser.objects.filter(email=email).first()
+            if user is None:
+                if send_email(email):
+
+                    user = CustomUser.objects.create(
+                        email=email, details_submitted=False
+                    )
+                    return Response(
+                        {"error": "Mobile No. not registered", "registered": False},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+                return Response(
+                    data={"error": "OTP not sent"},
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                )
+
+            if send_email(email):
                 return Response(
                     {"success": "Phone number exists", "registered": True},
                     status=status.HTTP_200_OK,

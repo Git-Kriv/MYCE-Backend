@@ -5,9 +5,15 @@ import environ
 import jwt
 import requests
 
-from django.http import JsonResponse
+from django.http import JsonResponse, response
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
+from rest_framework import status
+from rest_framework.response import Response
+
+
+from django.core.mail import send_mail
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
@@ -20,6 +26,27 @@ environ.Env.read_env()
 # pylint: disable=no-member
 
 JWT_authenticator = JWTAuthentication()
+
+
+def send_email(recipient, otp, format=None):
+    """
+    Send an email.
+    """
+    try:
+        message = f"Your OTP for MYCE application signup is {otp}"
+        # data = request.data
+        # message = f" Name: {data['name']}\n Email: {data['email']}\n Company: {data['company']}\n Requirements: {data['requirements']} \n Phone Number : {data['phone_number']} "
+        send_mail(
+            "OTP for MYCE application",
+            message,
+            "kriv.connect@gmai.com",
+            [recipient],
+            fail_silently=False,
+        )
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def send_otp(phone_number):
@@ -50,11 +77,29 @@ def send_otp(phone_number):
     return False
 
 
-def verify_otp(otp, mobile_number):
+def send_otp_email(email):
+    """Sends an OTP to the given phone number."""
+
+    otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
+
+    response = send_email(email, otp)
+    if response["return"]:
+        OTP.objects.create(otp_val=otp, email=email)
+        return True, "success"
+    print("[OTP_PROCESS] ERROR: ", response["message"])
+    return False
+
+
+def verify_otp(otp, mobile_number=None, email=None):
     """Verifies the OTP sent to the given mobile number"""
 
-    otp_objects = OTP.objects.filter(phone_number=mobile_number)
     current_time = time.time()
+    if mobile_number:
+        otp_objects = OTP.objects.filter(phone_number=mobile_number)
+    elif email:
+        otp_objects = OTP.objects.filter(email=email)
+    else:
+        return False
     print("[OTP_PROCESS] INFO: Printing entered OTP and OTP Object")
 
     for otp_object in otp_objects:
