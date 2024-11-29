@@ -80,3 +80,19 @@ class BuyingProperty(models.Model):
     class Meta:
         verbose_name_plural = "Buying Property"
         ordering = ["location_line_1"]
+
+
+class SwimmingPool(models.Model):
+    """
+    Swimming Pool Model
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
+    location_details = models.TextField(blank=True, null=True)
+    size_availability = models.TextField(blank=True, null=True)
+    pool_size = models.CharField(max_length=255, blank=True, null=True)
+    equipment_list = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Swimming Pools"

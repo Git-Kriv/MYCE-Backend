@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ArchitectureDesign, SellingProperty, BuyingProperty
+from .models import ArchitectureDesign, SellingProperty, BuyingProperty, SwimmingPool
 
 
 class ArchitectureDesignSerializer(serializers.ModelSerializer):
@@ -48,3 +48,9 @@ class BuyingPropertySerializer(serializers.ModelSerializer):
             "budget",
         ]
         read_only_fields = ["id"]
+
+
+class SwimmingPoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SwimmingPool
+        fields = "__all__"
