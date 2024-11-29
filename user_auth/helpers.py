@@ -85,7 +85,7 @@ def send_otp_email(email):
 
     otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
 
-    response = send_email(email, otp)
+    response = send_email(email)
     if response["return"]:
         OTP.objects.create(otp_val=otp, email=email)
         return True, "success"

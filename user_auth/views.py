@@ -99,7 +99,7 @@ def verify_phone(request):
 
 
 @api_view(["POST"])
-@permission_classes(AllowAny)
+@permission_classes([AllowAny])
 def verify_email(request):
     """To check if a user exists with given email if not then create user and send OTP"""
 

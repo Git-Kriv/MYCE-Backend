@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ArchitectureDesign, SellingProperty, BuyingProperty
+from .models import ArchitectureDesign, SellingProperty, BuyingProperty, SwimmingPool
 
 
 @admin.register(ArchitectureDesign)
@@ -40,3 +40,6 @@ class BuyingPropertyAdmin(admin.ModelAdmin):
     search_fields = ("location_line_1", "location_line_2", "property_type")
     list_filter = ("property_type",)
     ordering = ("location_line_1",)
+
+
+admin.register(SwimmingPool)
