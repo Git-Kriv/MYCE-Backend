@@ -28,10 +28,13 @@ environ.Env.read_env()
 JWT_authenticator = JWTAuthentication()
 
 
-def send_email(recipient, otp, format=None):
+def send_email(recipient, format=None):
     """
     Send an email.
+
     """
+
+    otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
     try:
         message = f"Your OTP for MYCE application signup is {otp}"
         # data = request.data

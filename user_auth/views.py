@@ -101,7 +101,7 @@ def verify_phone(request):
 @api_view(["POST"])
 @permission_classes(AllowAny)
 def verify_email(request):
-    """To check if a user exists with same phone number if not then create user and send OTP"""
+    """To check if a user exists with given email if not then create user and send OTP"""
 
     if request.method == "POST":
         try:
@@ -109,19 +109,18 @@ def verify_email(request):
 
             if email == "test@myce.com":  # FIXME: Only for  testing.
                 return Response(
-                    {"success": "Phone number exists", "registered": False},
+                    {"success": "Email exists", "registered": False},
                     status=status.HTTP_200_OK,
                 )
 
             user = CustomUser.objects.filter(email=email).first()
             if user is None:
                 if send_email(email):
-
                     user = CustomUser.objects.create(
                         email=email, details_submitted=False
                     )
                     return Response(
-                        {"error": "Mobile No. not registered", "registered": False},
+                        {"error": "Email not registered", "registered": False},
                         status=status.HTTP_404_NOT_FOUND,
                     )
 
@@ -132,7 +131,7 @@ def verify_email(request):
 
             if send_email(email):
                 return Response(
-                    {"success": "Phone number exists", "registered": True},
+                    {"success": "Email is registered", "registered": True},
                     status=status.HTTP_200_OK,
                 )
             return Response(
@@ -154,10 +153,11 @@ def verify_email(request):
 @permission_classes([AllowAny])
 def verify_and_return_creds(request):
     """To verify the otp sent to the user"""
-    try:
-        otp = request.data["otp"]
+    otp = request.data["otp"]
+
+    if "phone_number" in request.data:
         phone_number = request.data["phone_number"]
-        # FIXME: This is just for the google app testing
+        # FIXME: This is just for the app testing
         if str(phone_number) == "1234567890":
             if CustomUser.objects.filter(phone_number=int(phone_number)).exists():
                 user = CustomUser.objects.get(phone_number=phone_number)
@@ -181,8 +181,8 @@ def verify_and_return_creds(request):
                 "user_profile": user_profile_data,
             }
             return Response({"key": True, "data": data}, status=status.HTTP_200_OK)
-        # REMOVE THIS COMPLETE BLOCK AFTER TESTING ^
-        if verify_otp(otp, phone_number):
+        # TODO: REMOVE THIS COMPLETE BLOCK AFTER TESTING ^
+        if verify_otp(otp=otp, mobile_number=phone_number):
             user = CustomUser.objects.get(phone_number=phone_number)
             refresh = RefreshToken.for_user(user)
 
@@ -201,9 +201,53 @@ def verify_and_return_creds(request):
 
         return Response({"key": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-    except Exception as e:
-        print("[OTP_PROCESS] ERROR: ", str(e))
-        return Response({"key": False}, status=status.HTTP_400_BAD_REQUEST)
+    elif "email" in request.data:
+
+        email = request.data["email"]
+        # FIXME: This is just for the  app testing
+        if str(email) == "test@myce.com":
+            if CustomUser.objects.filter(email=email).exists():
+                user = CustomUser.objects.get(email=email)
+                refresh = RefreshToken.for_user(user)
+            else:
+                user = CustomUser.objects.create(
+                    name="TEST", email=email, details_submitted=False
+                )
+                refresh = RefreshToken.for_user(user)
+
+            user_profile = UserProfile.objects.filter(user=user)
+
+            if user_profile.exists():
+                user_profile_data = UserProfileSerializer(user_profile.first()).data
+            else:
+                user_profile_data = None
+
+            data = {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user_profile": user_profile_data,
+            }
+            return Response({"key": True, "data": data}, status=status.HTTP_200_OK)
+        # TODO: REMOVE THIS COMPLETE BLOCK AFTER TESTING ^
+        if verify_otp(otp=otp, email=email):
+            user = CustomUser.objects.get(email=email)
+            refresh = RefreshToken.for_user(user)
+
+            user_profile = UserProfile.objects.filter(user=user)
+            if user_profile.exists():
+                user_profile_data = UserProfileSerializer(user_profile.first()).data
+            else:
+                user_profile_data = None
+
+            data = {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user_profile": user_profile_data,
+            }
+            return Response({"key": True, "data": data}, status=status.HTTP_200_OK)
+
+        return Response({"key": False}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET", "PUT"])
