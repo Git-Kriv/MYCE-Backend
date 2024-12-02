@@ -44,9 +44,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(
-        unique=False, null=True, blank=True
+        unique=True, null=False, blank=False
     )  # FIXME: Change when SMTP is configured
-    phone_number = models.BigIntegerField(unique=True, blank=False, null=False)
+    phone_number = models.BigIntegerField(blank=True, null=True)
     details_submitted = models.BooleanField(default=False)
     address = models.TextField(blank=True, null=True)
 
@@ -54,7 +54,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     objects = CustomUserManager()
-    USERNAME_FIELD = "phone_number"
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["name"]
 
     def __str__(self):
@@ -76,8 +76,8 @@ class UserProfile(models.Model):
     full_name = models.CharField(max_length=255, blank=True, null=True)
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
-    phone_number = models.BigIntegerField(unique=True, blank=False, null=False)
-    email = models.EmailField(unique=True, null=True, blank=True)
+    phone_number = models.BigIntegerField(blank=True, null=True)
+    email = models.EmailField(null=False, blank=False)
 
     def __str__(self):
         return self.full_name + "--" + str(self.phone_number)

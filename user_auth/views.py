@@ -1,5 +1,6 @@
 """ Module for login and signup views. """ ""
 
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -29,7 +30,11 @@ def signup(request):  # pylint: disable=R1710
     if request.method == "POST":
         user = request.user
         phone_number = user.phone_number
-        if UserProfile.objects.filter(phone_number=phone_number).exists():
+        email = user.email
+        if (
+            UserProfile.objects.filter(phone_number=phone_number).exists()
+            or UserProfile.objects.filter(email=email).exists()
+        ):
             return Response(
                 {"error": "Details already submitted for this user."},
                 status=status.HTTP_400_BAD_REQUEST,

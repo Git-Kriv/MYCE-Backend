@@ -30,6 +30,7 @@ class House(models.Model):
     home_type = models.CharField(
         choices=HOUSE_TYPE, max_length=255, blank=False, null=False, default="Bungalow"
     )
+    location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     plan_details = models.TextField(blank=True, null=True)
@@ -60,6 +61,7 @@ class IndustrialProperty(models.Model):
         null=False,
         default="Office Space",
     )
+    location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     plan_details = models.TextField(blank=True, null=True)
@@ -85,6 +87,7 @@ class CommercialProperty(models.Model):
     cp_type = models.CharField(
         max_length=255, blank=False, null=False, default="Factory Structure"
     )
+    location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     plan_details = models.TextField(blank=True, null=True)
@@ -109,6 +112,7 @@ class Inquiries(models.Model):
     email = models.EmailField(blank=False, null=False)
     phone_number = models.CharField(max_length=13, blank=False, null=False)
     message = models.TextField(blank=False, null=False)
+    report = models.TextField(blank=False, null=False)
 
     def __str__(self):
         return self.email + "--" + self.phone_number

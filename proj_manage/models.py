@@ -1,6 +1,14 @@
+from concurrent.futures import ProcessPoolExecutor
 import uuid
 
 from django.db import models
+
+
+PROPERTY_TYPE = [
+    ("Land", "Land"),
+    ("Residential", "Residential"),
+    ("Commercial", "Commercial"),
+]
 
 
 REQUIREMENT_TYPE = [
@@ -21,6 +29,7 @@ class ArchitectureDesign(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
+    location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     land_size = models.DecimalField(max_digits=10, decimal_places=2)
@@ -43,6 +52,8 @@ class SellingProperty(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
+
+    location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     property_type = models.CharField(choices=REQUIREMENT_TYPE, max_length=255)
@@ -51,6 +62,7 @@ class SellingProperty(models.Model):
     property_documents = models.FileField(
         upload_to="property_documents/", blank=True, null=True
     )
+    # todo: Add Property Type
     expected_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
@@ -68,6 +80,7 @@ class BuyingProperty(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
+    location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
     property_type = models.CharField(choices=REQUIREMENT_TYPE, max_length=255)
