@@ -28,24 +28,21 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "first_name": {"required": True},
             "last_name": {"required": True},
-            "phone_number": {"required": True},
+            "email": {"required": True},
         }
 
     def create(self, validated_data):
         password = secrets.token_urlsafe(12)
-        if CustomUser.objects.filter(
-            phone_number=validated_data["phone_number"]
-        ).exists():
-            user = CustomUser.objects.filter(
-                phone_number=int(validated_data["phone_number"])
-            ).first()
+        if CustomUser.objects.filter(email=validated_data["email"]).exists():
+            user = CustomUser.objects.filter(email=int(validated_data["email"])).first()
             if not user.details_submitted:
                 user.name = (
                     validated_data["first_name"] + " " + validated_data["last_name"]
                 )
-                if "email" in validated_data:
-                    user.email = validated_data["email"]
-                validated_data["email"] = None
+                if "phone_number" in validated_data:
+                    user.phone_number = validated_data["phone_number"]
+                else:
+                    validated_data["phone_number"] = 0
                 user.details_submitted = True
                 user.save()
 

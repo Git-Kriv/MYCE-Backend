@@ -283,7 +283,7 @@ def user_profile(request):  # pylint: disable=R1710
 
             if (
                 "phone_number" in request.data
-            ):  # FIXME : Later add send otp and logic to handle the case.
+            ):  # FIXME : Later add send otp and logic to handle the case and similar for the email.
                 if request.data["phone_number"] != user.phone_number:
                     user.phone_number = request.data["phone_number"]
                     user.save()
@@ -318,3 +318,34 @@ def user_profile(request):  # pylint: disable=R1710
             return Response(
                 {"error": "User Profile not found"}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+@api_view(["DELETE"])
+@jwt_auth_required
+def delete_user(request):
+    """
+    Delete the authenticated user.
+    """
+    try:
+        user = request.user
+
+        try:
+            refresh_token = RefreshToken.for_user(user)
+            refresh_token.blacklist()
+        except Exception as e:
+            print(f"Token revocation error: {e}")
+
+        user.delete()
+
+        return Response(
+            {"success": "User account has been deleted successfully."},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+    except Exception as e:
+        return Response(
+            {
+                "error": "An error occurred while deleting the user account.",
+                "details": str(e),
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )

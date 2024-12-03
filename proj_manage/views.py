@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.schemas.coreapi import serializers
-from .models import ArchitectureDesign, SellingProperty, BuyingProperty
-from .serializers import (
+from proj_manage.models import ArchitectureDesign, SellingProperty, BuyingProperty
+from proj_manage.serializers import (
     ArchitectureDesignSerializer,
     SellingPropertySerializer,
     BuyingPropertySerializer,

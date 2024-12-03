@@ -11,42 +11,40 @@ from django.contrib.auth.models import (
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, phone_number, password=None, **extra_fields):
-        if not phone_number:
-            raise ValueError("The Phone No.  field must be set")
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("The Email field must be set")
         try:
-            if extra_fields["email"] is not None:
-                extra_fields["email"] = self.normalize_email(extra_fields["email"])
-        except KeyError:
+            if extra_fields["phone_number"] is not None:
+                extra_fields["phone_number"] = int(extra_fields["phone_number"])
+        except KeyError or TypeError:
             pass
         try:
             if extra_fields["name"] is not None:
                 name = extra_fields["name"]
                 extra_fields.pop("name")
         except KeyError:
-            # print("[ERROR]: ", e)
-            name = phone_number
-        user = self.model(phone_number=phone_number, name=name, **extra_fields)
+            name = email
+        user = self.model(email=email, name=name, **extra_fields)
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, phone_number, name, password=None, **extra_fields):
+    def create_superuser(self, email, name, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("name", name)
-        return self.create_user(phone_number, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     ## User Details
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255, blank=True, null=True)
-    email = models.EmailField(
-        unique=True, null=False, blank=False
-    )  # FIXME: Change when SMTP is configured
+    email = models.EmailField(unique=True, null=False, blank=False)
     phone_number = models.BigIntegerField(blank=True, null=True)
+
     details_submitted = models.BooleanField(default=False)
     address = models.TextField(blank=True, null=True)
 
@@ -58,7 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["name"]
 
     def __str__(self):
-        return self.name + "--" + str(self.phone_number)
+        return str(self.name) + "--" + str(self.email)
 
     def save(self, *args, **kwargs):
         if not self.name:
@@ -80,11 +78,11 @@ class UserProfile(models.Model):
     email = models.EmailField(null=False, blank=False)
 
     def __str__(self):
-        return self.full_name + "--" + str(self.phone_number)
+        return str(self.full_name) + "--" + str(self.email)
 
     def save(self, *args, **kwargs):
         if not self.full_name:
-            self.full_name = self.first_name + " " + self.last_name
+            self.full_name = str(self.first_name) + " " + str(self.last_name)
         super(UserProfile, self).save(*args, **kwargs)
 
     class Meta:
@@ -101,7 +99,7 @@ class OTP(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.phone_number) + "-" + self.otp_val
+        return str(self.phone_number) + "-" + str(self.otp_val)
 
     class Meta:
         verbose_name_plural = "OTP"

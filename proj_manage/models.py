@@ -83,7 +83,7 @@ class BuyingProperty(models.Model):
     location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
-    property_type = models.CharField(choices=REQUIREMENT_TYPE, max_length=255)
+    property_type = models.CharField(choices=PROPERTY_TYPE, max_length=255)
     land_size = models.DecimalField(max_digits=10, decimal_places=2)
     budget = models.DecimalField(max_digits=10, decimal_places=2)
 
