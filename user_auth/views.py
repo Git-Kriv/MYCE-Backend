@@ -113,8 +113,12 @@ def verify_email(request):
             email = request.data["email"]
 
             if email == "test@myce.com":  # FIXME: Only for  testing.
+                registered = False
+                test_user = UserProfile.objects.filter(email=email)
+                if test_user.exists():
+                    registered = True
                 return Response(
-                    {"success": "Email exists", "registered": False},
+                    {"success": "Email exists", "registered": registered},
                     status=status.HTTP_200_OK,
                 )
 
@@ -211,9 +215,11 @@ def verify_and_return_creds(request):
         email = request.data["email"]
         # FIXME: This is just for the  app testing
         if str(email) == "test@myce.com":
+            registered = False
             if CustomUser.objects.filter(email=email).exists():
                 user = CustomUser.objects.get(email=email)
                 refresh = RefreshToken.for_user(user)
+                registered = True
             else:
                 user = CustomUser.objects.create(
                     name="TEST", email=email, details_submitted=False
@@ -231,16 +237,19 @@ def verify_and_return_creds(request):
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
                 "user_profile": user_profile_data,
+                "registered": registered,
             }
-            return Response({"key": True, "data": data}, status=status.HTTP_200_OK)
+            return Response({"data": data}, status=status.HTTP_200_OK)
         # TODO: REMOVE THIS COMPLETE BLOCK AFTER TESTING ^
         if verify_otp(otp=otp, email=email):
+            registered = False
             user = CustomUser.objects.get(email=email)
             refresh = RefreshToken.for_user(user)
 
             user_profile = UserProfile.objects.filter(user=user)
             if user_profile.exists():
                 user_profile_data = UserProfileSerializer(user_profile.first()).data
+                registered = True
             else:
                 user_profile_data = None
 
@@ -248,10 +257,11 @@ def verify_and_return_creds(request):
                 "access": str(refresh.access_token),
                 "refresh": str(refresh),
                 "user_profile": user_profile_data,
+                "registered": registered,
             }
-            return Response({"key": True, "data": data}, status=status.HTTP_200_OK)
+            return Response({"data": data}, status=status.HTTP_200_OK)
 
-        return Response({"key": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -289,23 +299,19 @@ def user_profile(request):  # pylint: disable=R1710
                     user.save()
             else:
                 request.data["phone_number"] = user_profile.phone_number
-            if "address" not in request.data:
-                request.data["age"] = user_profile.age
 
             request.data["user"] = user.id
-            request.data["first_name"] = (
-                request.data["first_name"]
-                if "first_name" in request.data
-                else user_profile.first_name
-            )
-            request.data["last_name"] = (
-                request.data["last_name"]
-                if "last_name" in request.data
-                else user_profile.last_name
-            )
-            request.data["full_name"] = (
-                request.data["first_name"] + " " + request.data["last_name"]
-            )
+            # request.data["first_name"] = (
+            #     request.data["first_name"]
+            #     if "first_name" in request.data
+            #     else user_profile.first_name
+            # )
+            # request.data["last_name"] = (
+            #     request.data["last_name"]
+            #     if "last_name" in request.data
+            #     else user_profile.last_name
+            # )
+            request.data["full_name"] = request.data["name"]
 
             serializer = UserProfileSerializer(user_profile, data=request.data)
             if serializer.is_valid():
