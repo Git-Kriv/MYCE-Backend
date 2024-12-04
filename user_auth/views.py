@@ -129,7 +129,7 @@ def verify_email(request):
                         email=email, details_submitted=False
                     )
                     return Response(
-                        {"error": "Email not registered", "registered": False},
+                        {"msg": "Email not registered; OTP sent", "registered": False},
                         status=status.HTTP_404_NOT_FOUND,
                     )
 
@@ -137,10 +137,15 @@ def verify_email(request):
                     data={"error": "OTP not sent"},
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 )
+            user_profile = UserProfile.objects.filter(email=email).first()
+            registered = False
+            if user_profile:
+                if user_profile.details_submitted:
+                    registered = True
 
             if send_email(email):
                 return Response(
-                    {"success": "Email is registered", "registered": True},
+                    {"success": "Email is registered", "registered": registered},
                     status=status.HTTP_200_OK,
                 )
             return Response(

@@ -95,7 +95,8 @@ class OTP(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     otp_val = models.CharField(max_length=6, editable=False)
-    phone_number = models.CharField(max_length=13)
+    email = models.EmailField(max_length=13)
+    phone_number = models.BigIntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -103,4 +104,4 @@ class OTP(models.Model):
 
     class Meta:
         verbose_name_plural = "OTP"
-        ordering = ["phone_number", "created_at"]
+        ordering = ["email", "created_at"]

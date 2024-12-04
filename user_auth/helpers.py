@@ -46,6 +46,8 @@ def send_email(recipient, format=None):
             [recipient],
             fail_silently=False,
         )
+        OTP.objects.create(otp_val=otp, email=recipient)
+
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         print(e)
@@ -80,22 +82,22 @@ def send_otp(phone_number):
     return False
 
 
-def send_otp_email(email):
-    """Sends an OTP to the given phone number."""
-
-    otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
-
-    response = send_email(email)
-    if response["return"]:
-        OTP.objects.create(otp_val=otp, email=email)
-        return True, "success"
-    print("[OTP_PROCESS] ERROR: ", response["message"])
-    return False
+# def send_otp_email(email):
+#     """Sends an OTP to the given phone number."""
+#
+#     otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
+#
+#     response = send_email(email)
+#     if response["return"]:
+#         OTP.objects.create(otp_val=otp, email=email)
+#         return True, "success"
+#     print("[OTP_PROCESS] ERROR: ", response["message"])
+#     return False
 
 
 def verify_otp(otp, mobile_number=None, email=None):
     """Verifies the OTP sent to the given mobile number"""
-
+    otp = str(otp)
     current_time = time.time()
     if mobile_number:
         otp_objects = OTP.objects.filter(phone_number=mobile_number)
@@ -103,6 +105,7 @@ def verify_otp(otp, mobile_number=None, email=None):
         otp_objects = OTP.objects.filter(email=email)
     else:
         return False
+
     print("[OTP_PROCESS] INFO: Printing entered OTP and OTP Object")
 
     for otp_object in otp_objects:
