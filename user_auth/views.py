@@ -39,6 +39,11 @@ def signup(request):  # pylint: disable=R1710
                 {"error": "Details already submitted for this user."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        if "name" in request.data:
+            request.data["full_name"] = request.data["name"]
+            request.data["first_name"] = " ".join(request.data["name"].split(" ")[:-1])
+            request.data["last_name"] = request.data["name"].split(" ")[-1]
         serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
             user, user_profile_data = serializer.save()
