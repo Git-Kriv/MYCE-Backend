@@ -33,8 +33,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = secrets.token_urlsafe(12)
+        email = validated_data["email"]
+        print(email)
         if CustomUser.objects.filter(email=validated_data["email"]).exists():
-            user = CustomUser.objects.filter(email=int(validated_data["email"])).first()
+            user = CustomUser.objects.filter(email=validated_data["email"]).first()
             if not user.details_submitted:
                 user.name = (
                     validated_data["first_name"] + " " + validated_data["last_name"]
@@ -55,18 +57,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 return user, serialized_user_profile.data
             else:
                 raise serializers.ValidationError(
-                    {"phone_number": "Phone number already exists"}
+                    {"error": "email already exists, please login"}
                 )
         else:  # NOT Accessed as we have added @jwt_required() in the view - allows only OTP verified users
-            user = CustomUser.objects.create_user(
-                name=validated_data["first_name"] + " " + validated_data["last_name"],
-                email=validated_data["email"],
-                phone_number=int(validated_data["phone_number"]),
-                password=password,
-                details_submitted=True,
-            )
-            validated_data["user"] = user
 
-            user_profile = UserProfile.objects.create(**validated_data)
-            serialized_user_profile = UserProfileSerializer(user_profile)
-            return user, serialized_user_profile.data
+            raise serializers.ValidationError({"error": "email not found"})

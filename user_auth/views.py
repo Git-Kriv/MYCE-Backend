@@ -139,8 +139,10 @@ def verify_email(request):
                 )
             user_profile = UserProfile.objects.filter(email=email).first()
             registered = False
+            print(user)
             if user_profile:
-                if user_profile.details_submitted:
+                if user.details_submitted:
+                    print("USER THING WORKS")
                     registered = True
 
             if send_email(email):
@@ -278,8 +280,10 @@ def user_profile(request):  # pylint: disable=R1710
     if request.method == "GET":
         try:
             user = request.user
+            print(user.id)
+            user_profile = UserProfile.objects.filter(user=user.id).first()
             return Response(
-                {"user_profile": UserProfileSerializer(user.user_profile).data},
+                {"user_profile": UserProfileSerializer(user_profile).data},
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
@@ -293,7 +297,7 @@ def user_profile(request):  # pylint: disable=R1710
     if request.method == "PUT":
         try:
             user = request.user
-            user_profile = user.user_profile
+            user_profile = UserProfile.objects.get(user=user.id)
             request.data["user"] = request.user.id
 
             if (
@@ -306,6 +310,10 @@ def user_profile(request):  # pylint: disable=R1710
                 request.data["phone_number"] = user_profile.phone_number
 
             request.data["user"] = user.id
+
+            if "email" not in request.data:
+                request.data["email"] = user.email
+
             # request.data["first_name"] = (
             #     request.data["first_name"]
             #     if "first_name" in request.data
@@ -317,6 +325,8 @@ def user_profile(request):  # pylint: disable=R1710
             #     else user_profile.last_name
             # )
             request.data["full_name"] = request.data["name"]
+            request.data["first_name"] = " ".join(request.data["name"].split(" ")[:-1])
+            request.data["last_name"] = request.data["name"].split(" ")[-1]
 
             serializer = UserProfileSerializer(user_profile, data=request.data)
             if serializer.is_valid():

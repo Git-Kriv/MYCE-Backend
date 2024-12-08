@@ -34,7 +34,7 @@ def send_email(recipient, format=None):
 
     """
 
-    otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
+    otp = "".join([str(secrets.randbelow(10)) for _ in range(4)])
     try:
         message = f"Your OTP for MYCE application signup is {otp}"
         # data = request.data
@@ -57,7 +57,7 @@ def send_email(recipient, format=None):
 def send_otp(phone_number):
     """Sends an OTP to the given phone number."""
 
-    otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
+    otp = "".join([str(secrets.randbelow(10)) for _ in range(4)])
     response = requests.post(
         "https://www.fast2sms.com/dev/bulkV2",
         headers={
@@ -85,7 +85,7 @@ def send_otp(phone_number):
 # def send_otp_email(email):
 #     """Sends an OTP to the given phone number."""
 #
-#     otp = "".join([str(secrets.randbelow(10)) for _ in range(6)])
+#     otp = "".join([str(secrets.randbelow(10)) for _ in range(4)])
 #
 #     response = send_email(email)
 #     if response["return"]:
@@ -112,13 +112,13 @@ def verify_otp(otp, mobile_number=None, email=None):
         print("[OTP_PROCESS] INFO: ", otp, str(otp_object.otp_val))
         if otp_object.otp_val == otp:
             time_difference = current_time - otp_object.created_at.timestamp()
-            if time_difference > 6000:
+            if time_difference > 30000:
                 otp_object.delete()
 
                 return False
             otp_object.delete()
             return True
-        if current_time - otp_object.created_at.timestamp() > 6000:
+        if current_time - otp_object.created_at.timestamp() > 30000:
             otp_object.delete()
     return False
 
