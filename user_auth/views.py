@@ -318,6 +318,13 @@ def user_profile(request):  # pylint: disable=R1710
 
             if "email" not in request.data:
                 request.data["email"] = user.email
+            else:
+                if request.data["email"] != user.email:
+                    user.email = request.data["email"]
+                    # FIXME : Later add send otp and logic to handle the case and similar for the email.
+
+                    user.save()
+                    request.data["user"] = user.id
 
             # request.data["first_name"] = (
             #     request.data["first_name"]
@@ -329,6 +336,7 @@ def user_profile(request):  # pylint: disable=R1710
             #     if "last_name" in request.data
             #     else user_profile.last_name
             # )
+
             request.data["full_name"] = request.data["name"]
             request.data["first_name"] = " ".join(request.data["name"].split(" ")[:-1])
             request.data["last_name"] = request.data["name"].split(" ")[-1]

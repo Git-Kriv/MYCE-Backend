@@ -41,7 +41,7 @@ class House(models.Model):
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name + "--" + self.address
+        return self.home_type + "--" + self.location
 
     class Meta:
         verbose_name_plural = "Houses"
@@ -71,7 +71,7 @@ class IndustrialProperty(models.Model):
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.type + "--" + self.location_line_1
+        return self.property_type + "--" + self.location_line_1
 
     class Meta:
         verbose_name_plural = "Industrial Properties"
@@ -96,7 +96,7 @@ class CommercialProperty(models.Model):
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.type + "--" + self.location_line_1
+        return self.cp_type + "--" + self.location_line_1
 
     class Meta:
         verbose_name_plural = "Commercial Properties"
