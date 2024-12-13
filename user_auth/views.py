@@ -320,6 +320,12 @@ def user_profile(request):  # pylint: disable=R1710
                 request.data["email"] = user.email
             else:
                 if request.data["email"] != user.email:
+
+                    if CustomUser.objects.filter(email=request.data["email"]).exists():
+                        return Response(
+                            {"error": "Email already in use"},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
                     user.email = request.data["email"]
                     # FIXME : Later add send otp and logic to handle the case and similar for the email.
 
