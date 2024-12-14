@@ -95,7 +95,7 @@ class OTP(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     otp_val = models.CharField(max_length=6, editable=False)
-    email = models.EmailField(max_length=13)
+    email = models.EmailField()
     phone_number = models.BigIntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
