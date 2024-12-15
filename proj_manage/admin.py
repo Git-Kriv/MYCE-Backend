@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import ArchitectureDesign, SellingProperty, BuyingProperty, SwimmingPool
+from .models import (
+    ArchitectureDesign,
+    SellingProperty,
+    BuyingProperty,
+    SwimmingPool,
+    ProjectManagementService,
+)
 
 
 @admin.register(ArchitectureDesign)
@@ -40,6 +46,11 @@ class BuyingPropertyAdmin(admin.ModelAdmin):
     search_fields = ("location_line_1", "location_line_2", "property_type")
     list_filter = ("property_type",)
     ordering = ("location_line_1",)
+
+
+@admin.register(ProjectManagementService)
+class ProjectManagementServiceAdmin(admin.ModelAdmin):
+    list_display = ("user",)
 
 
 admin.register(SwimmingPool)

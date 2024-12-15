@@ -109,3 +109,17 @@ class SwimmingPool(models.Model):
 
     class Meta:
         verbose_name_plural = "Swimming Pools"
+
+
+class ProjectManagementService(models.Model):
+    """Project Management Service Model"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
+    security = models.TextField(blank=True, null=True)
+    house_keeping = models.TextField(blank=True, null=True)
+    property_tax = models.TextField(blank=True, null=True)
+    electrical_and_repairs = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Project Management Services"

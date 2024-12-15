@@ -2,12 +2,18 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.schemas.coreapi import serializers
-from proj_manage.models import ArchitectureDesign, SellingProperty, BuyingProperty
+from proj_manage.models import (
+    ArchitectureDesign,
+    SellingProperty,
+    BuyingProperty,
+    ProjectManagementService,
+)
 from proj_manage.serializers import (
     ArchitectureDesignSerializer,
     SellingPropertySerializer,
     BuyingPropertySerializer,
     SwimmingPoolSerializer,
+    ProjectManagementServiceSerializer,
 )
 from user_auth.helpers import (
     jwt_auth_required,
@@ -77,4 +83,20 @@ def swimming_pool(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET", "POST"])
+@jwt_auth_required
+def project_management_services(request):
+    if request.method == "GET":
+        services = ProjectManagementService.objects.filter(user=request.user)
+        serializer = ProjectManagementServiceSerializer(services, many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        request.data["user"] = request.user.id
+        serializer = ProjectManagementServiceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

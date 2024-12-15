@@ -1,5 +1,7 @@
 """ Module for login and signup views. """ ""
 
+import random
+
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
@@ -184,6 +186,7 @@ def verify_and_return_creds(request):
                 user = CustomUser.objects.get(phone_number=phone_number)
                 refresh = RefreshToken.for_user(user)
             else:
+                email = f"test{random.randint(1, 100)}@myce.com"
                 user = CustomUser.objects.create(
                     name="TEST", phone_number=phone_number, details_submitted=False
                 )

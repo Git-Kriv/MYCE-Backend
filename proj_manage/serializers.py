@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import ArchitectureDesign, SellingProperty, BuyingProperty, SwimmingPool
+from .models import (
+    ArchitectureDesign,
+    SellingProperty,
+    BuyingProperty,
+    SwimmingPool,
+    ProjectManagementService,
+)
 
 
 class ArchitectureDesignSerializer(serializers.ModelSerializer):
@@ -53,4 +59,10 @@ class BuyingPropertySerializer(serializers.ModelSerializer):
 class SwimmingPoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = SwimmingPool
+        fields = "__all__"
+
+
+class ProjectManagementServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectManagementService
         fields = "__all__"
