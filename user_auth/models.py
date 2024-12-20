@@ -76,6 +76,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=255, blank=True, null=True)
     phone_number = models.BigIntegerField(blank=True, null=True)
     email = models.EmailField(null=False, blank=False)
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null=True)
 
     def __str__(self):
         return str(self.full_name) + "--" + str(self.email)
