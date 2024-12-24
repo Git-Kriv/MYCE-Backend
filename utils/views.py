@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from environ import re
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -12,6 +11,25 @@ from utils.serializers import (
     CommercialPropertySerializer,
     InquiriesSerializer,
 )
+
+from proj_manage.models import (
+    ArchitectureDesign,
+    SellingProperty,
+    BuyingProperty,
+    SwimmingPool,
+    ProjectManagementService,
+)
+
+from proj_manage.serializers import (
+    ArchitectureDesignSerializer,
+    SellingPropertySerializer,
+    BuyingPropertySerializer,
+    SwimmingPoolSerializer,
+    ProjectManagementServiceSerializer,
+)
+
+
+# pyright: reportAttributeAccessIssue=false
 
 
 @api_view(["GET", "POST"])
@@ -81,3 +99,57 @@ def inquiry(request):
         inquiries = Inquiries.objects.filter(user=request.user)
         serializer = InquiriesSerializer(inquiries, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(["GET"])
+@jwt_auth_required
+def all_inquiries(request):
+    """Get all inquiries for all the models."""
+    if request.method == "GET":
+        user = request.user.id
+        houses = House.objects.filter(user=user)
+        industrial_properties = IndustrialProperty.objects.filter(user=user)
+        commercial_properties = CommercialProperty.objects.filter(user=user)
+        inquiries = Inquiries.objects.filter(user=user)
+        houses_serializer = HouseSerializer(houses, many=True)
+        industrial_properties_serializer = IndustrialPropertySerializer(
+            industrial_properties, many=True
+        )
+        commercial_properties_serializer = CommercialPropertySerializer(
+            commercial_properties, many=True
+        )
+        inquiries_serializer = InquiriesSerializer(inquiries, many=True)
+
+        buying_property = BuyingProperty.objects.filter(user=user)
+        selling_property = SellingProperty.objects.filter(user=user)
+        architecture_design = ArchitectureDesign.objects.filter(user=user)
+        swimming_pool = SwimmingPool.objects.filter(user=user)
+        project_management_service = ProjectManagementService.objects.filter(user=user)
+
+        buying_property_serializer = BuyingPropertySerializer(
+            buying_property, many=True
+        )
+        selling_property_serializer = SellingPropertySerializer(
+            selling_property, many=True
+        )
+        architecture_design_serializer = ArchitectureDesignSerializer(
+            architecture_design, many=True
+        )
+        swimming_pool_serializer = SwimmingPoolSerializer(swimming_pool, many=True)
+        project_management_service_serializer = ProjectManagementServiceSerializer(
+            project_management_service, many=True
+        )
+
+        data = {
+            "houses": houses_serializer.data,
+            "industrial_properties": industrial_properties_serializer.data,
+            "commercial_properties": commercial_properties_serializer.data,
+            "inquiries": inquiries_serializer.data,
+            "buying_property": buying_property_serializer.data,
+            "selling_property": selling_property_serializer.data,
+            "architecture_design": architecture_design_serializer.data,
+            "swimming_pool": swimming_pool_serializer.data,
+            "project_management_service": project_management_service_serializer.data,
+        }
+
+        return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
