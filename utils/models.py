@@ -21,6 +21,13 @@ COMMERICAL_PROPERTY_TYPE = [
 ]
 
 
+INQUIRY_STATUS = [
+    ("Received", "Received"),
+    ("In Progress", "In Progress"),
+    ("Processed", "Processed"),
+]
+
+
 class House(models.Model):
     """
     House model
@@ -113,6 +120,13 @@ class Inquiries(models.Model):
     phone_number = models.CharField(max_length=13, blank=False, null=False)
     message = models.TextField(blank=False, null=False)
     report = models.TextField(blank=False, null=False)
+    status = models.CharField(
+        blank=False,
+        null=False,
+        default="Received",
+        max_length=255,
+        choices=INQUIRY_STATUS,
+    )
 
     def __str__(self):
         return self.email + "--" + self.phone_number

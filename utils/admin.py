@@ -28,6 +28,6 @@ class CommercialPropertyAdmin(admin.ModelAdmin):
 
 @admin.register(Inquiries)
 class InquiriesAdmin(admin.ModelAdmin):
-    list_display = ("email", "phone_number", "message")
+    list_display = ("email", "phone_number", "message", "status")
     search_fields = ("email", "phone_number", "message")
     ordering = ("email", "phone_number")

@@ -3,6 +3,7 @@
 import random
 
 from django.contrib.auth.models import User
+from environ import re
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -137,7 +138,7 @@ def verify_email(request):
                     )
                     return Response(
                         {"msg": "Email not registered; OTP sent", "registered": False},
-                        status=status.HTTP_404_NOT_FOUND,
+                        status=status.HTTP_200_OK,
                     )
 
                 return Response(
@@ -335,20 +336,21 @@ def user_profile(request):  # pylint: disable=R1710
                     user.save()
                     request.data["user"] = user.id
 
-            # request.data["first_name"] = (
-            #     request.data["first_name"]
-            #     if "first_name" in request.data
-            #     else user_profile.first_name
-            # )
-            # request.data["last_name"] = (
-            #     request.data["last_name"]
-            #     if "last_name" in request.data
-            #     else user_profile.last_name
-            # )
+            if "name" in request.data:
+                request.data["full_name"] = request.data["name"]
 
-            request.data["full_name"] = request.data["name"]
-            request.data["first_name"] = " ".join(request.data["name"].split(" ")[:-1])
-            request.data["last_name"] = request.data["name"].split(" ")[-1]
+                if len(request.data["name"]) == 1:
+                    request.data["first_name"] = request.data["name"]
+                else:
+
+                    request.data["first_name"] = " ".join(
+                        request.data["name"].split(" ")[:-1]
+                    )
+                request.data["last_name"] = request.data["name"].split(" ")[-1]
+            else:
+                request.data["full_name"] = user_profile.full_name
+                request.data["first_name"] = user_profile.first_name
+                request.data["last_name"] = user_profile.last_name
 
             serializer = UserProfileSerializer(user_profile, data=request.data)
             if serializer.is_valid():

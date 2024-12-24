@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from environ import re
 from rest_framework import status
 from rest_framework.decorators import api_view
 
@@ -64,10 +65,10 @@ def get_commercial_properties(request):
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(["POST"])
+@api_view(["GET", "POST"])
 @jwt_auth_required
-def post_inquiry(request):
-    """Post an inquiry."""
+def inquiry(request):
+    """Post/Get an inquiry."""
     if request.method == "POST":
         request.data["user"] = request.user.id
         serializer = InquiriesSerializer(data=request.data)
@@ -75,3 +76,8 @@ def post_inquiry(request):
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "GET":
+        request.data["user"] = request.user.id
+        inquiries = Inquiries.objects.filter(user=request.user)
+        serializer = InquiriesSerializer(inquiries, many=True)
+        return JsonResponse(serializer.data, safe=False)
