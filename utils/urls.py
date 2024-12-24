@@ -14,4 +14,5 @@ urlpatterns = [
         name="get_commercial_properties",
     ),
     path("inquiries/", views.inquiry, name="inquiry"),
+    path("past-inquiries/", views.all_inquiries, name="past_inquiries"),
 ]
