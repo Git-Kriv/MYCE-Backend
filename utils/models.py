@@ -128,6 +128,8 @@ class Inquiries(models.Model):
         choices=INQUIRY_STATUS,
     )
 
+    user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
+
     def __str__(self):
         return self.email + "--" + self.phone_number
 
