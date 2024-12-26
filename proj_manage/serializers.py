@@ -13,6 +13,7 @@ class ArchitectureDesignSerializer(serializers.ModelSerializer):
         model = ArchitectureDesign
         fields = [
             "id",
+            "date_created",
             "user",
             "location_line_1",
             "location_line_2",
@@ -29,6 +30,7 @@ class SellingPropertySerializer(serializers.ModelSerializer):
         model = SellingProperty
         fields = [
             "id",
+            "date_created",
             "user",
             "location_line_1",
             "location_line_2",
@@ -46,6 +48,7 @@ class BuyingPropertySerializer(serializers.ModelSerializer):
         model = BuyingProperty
         fields = [
             "id",
+            "date_created",
             "user",
             "location_line_1",
             "location_line_2",

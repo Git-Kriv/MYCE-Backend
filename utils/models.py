@@ -34,6 +34,7 @@ class House(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
     home_type = models.CharField(
         choices=HOUSE_TYPE, max_length=255, blank=False, null=False, default="Bungalow"
     )
@@ -52,7 +53,7 @@ class House(models.Model):
 
     class Meta:
         verbose_name_plural = "Houses"
-        ordering = ["home_type"]
+        ordering = ["-date_created"]
 
 
 class IndustrialProperty(models.Model):
@@ -61,6 +62,8 @@ class IndustrialProperty(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    date_created = models.DateTimeField(auto_now_add=True)
     property_type = models.CharField(
         choices=INDUSTRY_PROPERTY_TYPE,
         max_length=255,
@@ -82,7 +85,7 @@ class IndustrialProperty(models.Model):
 
     class Meta:
         verbose_name_plural = "Industrial Properties"
-        ordering = ["property_type"]
+        ordering = ["-date_created"]
 
 
 class CommercialProperty(models.Model):
@@ -91,6 +94,8 @@ class CommercialProperty(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    date_created = models.DateTimeField(auto_now_add=True)
     cp_type = models.CharField(
         max_length=255, blank=False, null=False, default="Factory Structure"
     )
@@ -107,7 +112,7 @@ class CommercialProperty(models.Model):
 
     class Meta:
         verbose_name_plural = "Commercial Properties"
-        ordering = ["cp_type"]
+        ordering = ["-date_created"]
 
 
 class Inquiries(models.Model):
@@ -116,6 +121,8 @@ class Inquiries(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
+
     email = models.EmailField(blank=False, null=False)
     phone_number = models.CharField(max_length=13, blank=False, null=False)
     message = models.TextField(blank=False, null=False)
@@ -135,4 +142,4 @@ class Inquiries(models.Model):
 
     class Meta:
         verbose_name_plural = "Inquiries"
-        ordering = ["email", "phone_number"]
+        ordering = ["-date_created"]

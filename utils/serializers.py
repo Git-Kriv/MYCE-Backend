@@ -25,3 +25,7 @@ class InquiriesSerializer(ModelSerializer):
     class Meta:
         model = Inquiries
         fields = "__all__"
+
+    def create(self, validated_data):
+        validated_data["status"] = "Received"
+        return super().create(validated_data)

@@ -107,10 +107,14 @@ def all_inquiries(request):
     """Get all inquiries for all the models."""
     if request.method == "GET":
         user = request.user.id
-        houses = House.objects.filter(user=user)
-        industrial_properties = IndustrialProperty.objects.filter(user=user)
-        commercial_properties = CommercialProperty.objects.filter(user=user)
-        inquiries = Inquiries.objects.filter(user=user)
+        houses = House.objects.filter(user=user).order_by("-date_created")
+        industrial_properties = IndustrialProperty.objects.filter(user=user).order_by(
+            "-date_created"
+        )
+        commercial_properties = CommercialProperty.objects.filter(user=user).order_by(
+            "-date_created"
+        )
+        inquiries = Inquiries.objects.filter(user=user).order_by("-date_created")
         houses_serializer = HouseSerializer(houses, many=True)
         industrial_properties_serializer = IndustrialPropertySerializer(
             industrial_properties, many=True
@@ -120,11 +124,19 @@ def all_inquiries(request):
         )
         inquiries_serializer = InquiriesSerializer(inquiries, many=True)
 
-        buying_property = BuyingProperty.objects.filter(user=user)
-        selling_property = SellingProperty.objects.filter(user=user)
-        architecture_design = ArchitectureDesign.objects.filter(user=user)
-        swimming_pool = SwimmingPool.objects.filter(user=user)
-        project_management_service = ProjectManagementService.objects.filter(user=user)
+        buying_property = BuyingProperty.objects.filter(user=user).order_by(
+            "-date_created"
+        )
+        selling_property = SellingProperty.objects.filter(user=user).order_by(
+            "-date_created"
+        )
+        architecture_design = ArchitectureDesign.objects.filter(user=user).order_by(
+            "-date_created"
+        )
+        swimming_pool = SwimmingPool.objects.filter(user=user).order_by("-date_created")
+        project_management_service = ProjectManagementService.objects.filter(
+            user=user
+        ).order_by("-date_created")
 
         buying_property_serializer = BuyingPropertySerializer(
             buying_property, many=True

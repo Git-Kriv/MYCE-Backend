@@ -28,6 +28,7 @@ class ArchitectureDesign(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
     location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
@@ -42,7 +43,7 @@ class ArchitectureDesign(models.Model):
 
     class Meta:
         verbose_name_plural = "Architecture and Design"
-        ordering = ["location_line_1"]
+        ordering = ["-date_created"]
 
 
 class SellingProperty(models.Model):
@@ -53,10 +54,11 @@ class SellingProperty(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
 
+    date_created = models.DateTimeField(auto_now_add=True)
     location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
     location_line_2 = models.CharField(max_length=255, blank=True, null=True)
-    property_type = models.CharField(choices=REQUIREMENT_TYPE, max_length=255)
+    property_type = models.CharField(choices=PROPERTY_TYPE, max_length=255)
     land_size = models.DecimalField(max_digits=10, decimal_places=2)
     owner_details = models.TextField(blank=True, null=True)
     property_documents = models.FileField(
@@ -70,7 +72,7 @@ class SellingProperty(models.Model):
 
     class Meta:
         verbose_name_plural = "Selling Property"
-        ordering = ["location_line_1"]
+        ordering = ["-date_created"]
 
 
 class BuyingProperty(models.Model):
@@ -79,6 +81,7 @@ class BuyingProperty(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
     location = models.CharField(max_length=255, blank=False, null=False)
     location_line_1 = models.CharField(max_length=255, blank=False, null=False)
@@ -92,7 +95,7 @@ class BuyingProperty(models.Model):
 
     class Meta:
         verbose_name_plural = "Buying Property"
-        ordering = ["location_line_1"]
+        ordering = ["-date_created"]
 
 
 class SwimmingPool(models.Model):
@@ -101,6 +104,7 @@ class SwimmingPool(models.Model):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
     location_details = models.TextField(blank=True, null=True)
     size_availability = models.TextField(blank=True, null=True)
@@ -109,12 +113,14 @@ class SwimmingPool(models.Model):
 
     class Meta:
         verbose_name_plural = "Swimming Pools"
+        ordering = ["-date_created"]
 
 
 class ProjectManagementService(models.Model):
     """Project Management Service Model"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    date_created = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey("user_auth.CustomUser", on_delete=models.CASCADE)
     security = models.TextField(blank=True, null=True)
     house_keeping = models.TextField(blank=True, null=True)
@@ -123,3 +129,4 @@ class ProjectManagementService(models.Model):
 
     class Meta:
         verbose_name_plural = "Project Management Services"
+        ordering = ["-date_created"]
